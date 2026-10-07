@@ -39,14 +39,34 @@ class OrthodoxCalendarAppWidgetProvider : AppWidgetProvider() {
             val dayInfo = repository?.getDayInfo(today)
             val upcoming = repository?.getUpcomingGreatFeast(today)
 
-            val formatter = DateTimeFormatter.ofPattern("d MMMM", Locale("ru"))
-            val dateText = "Сегодня, ${today.format(formatter)}"
+            val dayOfWeekFormatter = DateTimeFormatter.ofPattern("EEEE, d MMMM", Locale("ru"))
+            val oldStyleFormatter = DateTimeFormatter.ofPattern("d MMMM", Locale("ru"))
 
-            val feastTitle = dayInfo?.mainFeast?.title
-                ?: dayInfo?.saints?.firstOrNull()
-                ?: "Память святых дня"
+            val newStyleDateStr = today.format(dayOfWeekFormatter).replaceFirstChar { it.uppercase() }
+            val oldStyleDateStr = if (dayInfo != null) {
+                "${dayInfo.oldStyleDate.format(oldStyleFormatter)} по ст. ст."
+            } else {
+                "${today.minusDays(13).format(oldStyleFormatter)} по ст. ст."
+            }
 
-            val fastRule = dayInfo?.fastingRule?.title ?: "Постный день"
+            val feastTitle = if (dayInfo != null) {
+                if (dayInfo.mainFeast != null) {
+                    "✝️ ${dayInfo.mainFeast.title}"
+                } else if (dayInfo.saints.isNotEmpty()) {
+                    dayInfo.saints.first()
+                } else {
+                    "Память святых дня"
+                }
+            } else {
+                "Православный день"
+            }
+
+            val fastTag = dayInfo?.fastingRule?.let { rule ->
+                "${rule.foodIcon} ${rule.title}"
+            } ?: "Постный день"
+
+            val fastDetail = dayInfo?.fastingDescription
+                ?: "Устав о трапезе дня по уставу Церкви"
 
             val upcomingText = if (upcoming != null) {
                 val days = upcoming.second
@@ -58,16 +78,20 @@ class OrthodoxCalendarAppWidgetProvider : AppWidgetProvider() {
                 }
                 "${upcoming.first.title} ($daysStr)"
             } else {
-                "Праздники года"
+                "Церковные праздники года"
             }
 
             val views = RemoteViews(context.packageName, R.layout.widget_orthodox_calendar).apply {
-                setTextViewText(R.id.widget_date_text, dateText)
-                setTextViewText(R.id.widget_fasting_text, fastRule)
+                setTextViewText(R.id.widget_date_text, newStyleDateStr)
+                setTextViewText(R.id.widget_old_style_text, oldStyleDateStr)
+                setTextViewText(R.id.widget_fasting_text, fastTag)
                 setTextViewText(R.id.widget_today_feast_title, feastTitle)
+                setTextViewText(R.id.widget_fasting_detail, fastDetail)
                 setTextViewText(R.id.widget_upcoming_feast, upcomingText)
 
-                val intent = Intent(context, MainActivity::class.java)
+                val intent = Intent(context, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                }
                 val pendingIntent = PendingIntent.getActivity(
                     context,
                     0,

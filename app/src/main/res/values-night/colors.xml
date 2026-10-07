@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary Orthodox Palette Dark -->
+    <color name="orthodox_primary">#E8939C</color>
+    <color name="orthodox_gold">#E6C364</color>
+    <color name="orthodox_gold_bright">#FFE082</color>
+
+    <!-- Widget Dark Theme / Night Mode Colors -->
+    <color name="widget_background_start">#211A1B</color>
+    <color name="widget_background_end">#141011</color>
+    <color name="widget_card_surface">#1AFFFFFF</color>
+    <color name="widget_border">#5C4547</color>
+    <color name="widget_text_title">#FFFFFF</color>
+    <color name="widget_text_subtitle">#E8DFDC</color>
+    <color name="widget_text_secondary">#FFE082</color>
+    <color name="widget_text_body">#D5C9C5</color>
+    <color name="widget_divider">#26FFFFFF</color>
+    <color name="widget_fast_tag_bg">#40000000</color>
+    <color name="widget_fast_tag_border">#66FFE082</color>
+    <color name="widget_fast_tag_text">#FFE082</color>
+</resources>

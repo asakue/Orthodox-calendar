@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- Primary Orthodox Palette -->
+    <color name="orthodox_primary">#801424</color>
+    <color name="orthodox_gold">#B8860B</color>
+    <color name="orthodox_gold_bright">#FFD54F</color>
+
+    <!-- Widget Light Mode Colors -->
+    <color name="widget_background_start">#801424</color>
+    <color name="widget_background_end">#4A0812</color>
+    <color name="widget_card_surface">#26FFFFFF</color>
+    <color name="widget_border">#B8860B</color>
+    <color name="widget_text_title">#FFFFFF</color>
+    <color name="widget_text_subtitle">#FDF5E6</color>
+    <color name="widget_text_secondary">#FFD54F</color>
+    <color name="widget_text_body">#F5EBE6</color>
+    <color name="widget_divider">#33FFFFFF</color>
+    <color name="widget_fast_tag_bg">#33000000</color>
+    <color name="widget_fast_tag_border">#80FFD54F</color>
+    <color name="widget_fast_tag_text">#FFD54F</color>
 </resources>

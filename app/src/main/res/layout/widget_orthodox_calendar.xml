@@ -4,10 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="12dp"
+    android:padding="14dp"
     android:background="@drawable/widget_background">
 
-    <!-- Header Row -->
+    <!-- Top Header Row: Cross, Date & Fasting Badge -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,53 +15,81 @@
         android:gravity="center_vertical">
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:id="@+id/widget_icon_cross"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
             android:src="@drawable/ic_orthodox_cross"
             android:contentDescription="@string/app_name" />
 
-        <TextView
-            android:id="@+id/widget_date_text"
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
-            android:text="Сегодня, 7 октября"
-            android:textColor="#FDF5E6"
-            android:textSize="13sp"
-            android:textStyle="bold" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/widget_date_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="7 октября"
+                android:textColor="@color/widget_text_title"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/widget_old_style_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="24 сентября ст. ст."
+                android:textColor="@color/widget_text_subtitle"
+                android:textSize="10sp" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/widget_fasting_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/widget_tag_background"
-            android:paddingHorizontal="6dp"
-            android:paddingVertical="2dp"
-            android:text="Постный день"
-            android:textColor="#FFD54F"
-            android:textSize="11sp" />
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="3dp"
+            android:text="🐟 Постный день"
+            android:textColor="@color/widget_fast_tag_text"
+            android:textSize="11sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginVertical="6dp"
-        android:background="#40FFFFFF" />
+        android:background="@color/widget_divider" />
 
-    <!-- Today's Main Feast / Saint -->
+    <!-- Feast or Saint Commemoration of Today -->
     <TextView
         android:id="@+id/widget_today_feast_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:maxLines="2"
-        android:text="Святой равноапостольной Фёклы"
-        android:textColor="#FFFFFF"
-        android:textSize="15sp"
+        android:text="Память святых дня"
+        android:textColor="@color/widget_text_title"
+        android:textSize="14sp"
         android:textStyle="bold" />
 
-    <!-- Next Upcoming Great Feast -->
+    <!-- Fasting Reminder Detail -->
+    <TextView
+        android:id="@+id/widget_fasting_detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="Разрешается горячая пища с растительным маслом"
+        android:textColor="@color/widget_text_body"
+        android:textSize="11sp" />
+
+    <!-- Upcoming Nearest Feast Banner -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -73,9 +101,9 @@
             android:id="@+id/widget_upcoming_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ближайший: "
-            android:textColor="#E0E0E0"
-            android:textSize="12sp" />
+            android:text="⏳ Ближайший: "
+            android:textColor="@color/widget_text_subtitle"
+            android:textSize="11sp" />
 
         <TextView
             android:id="@+id/widget_upcoming_feast"
@@ -85,8 +113,8 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="Покров Пресвятой Богородицы (через 7 дн.)"
-            android:textColor="#FFD54F"
-            android:textSize="12sp"
+            android:textColor="@color/widget_text_secondary"
+            android:textSize="11sp"
             android:textStyle="bold" />
     </LinearLayout>
 
