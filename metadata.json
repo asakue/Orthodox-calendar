@@ -1,0 +1,6 @@
+{
+  "name": "Православный Календарь",
+  "description": "Календарь всех православных праздников, постов, тропарей и молитв с виджетом, поиском и напоминаниями.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
