@@ -7,18 +7,23 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AutoStories
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Today
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -33,11 +38,13 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -53,7 +60,6 @@ import com.example.ui.screens.PrayersScreen
 import com.example.ui.screens.SettingsScreen
 import com.example.ui.screens.TodayScreen
 import com.example.ui.theme.OrthodoxCalendarTheme
-import com.example.ui.theme.OrthodoxGold
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,7 +91,6 @@ fun OrthodoxAppRoot(viewModel: MainViewModel) {
     val selectedHoliday by viewModel.selectedHoliday.collectAsState()
     val selectedPrayer by viewModel.selectedPrayer.collectAsState()
 
-    // If viewing holiday details
     if (selectedHoliday != null) {
         FeastDetailScreen(
             holiday = selectedHoliday!!,
@@ -95,7 +100,6 @@ fun OrthodoxAppRoot(viewModel: MainViewModel) {
         return
     }
 
-    // If viewing prayer details
     if (selectedPrayer != null) {
         PrayerDetailScreen(
             prayer = selectedPrayer!!,
@@ -105,12 +109,19 @@ fun OrthodoxAppRoot(viewModel: MainViewModel) {
         return
     }
 
-    // Handle back button on secondary tabs
     if (currentTab != AppNavTab.TODAY) {
         BackHandler {
             viewModel.selectTab(AppNavTab.TODAY)
         }
     }
+
+    val bottomTabs = listOf(
+        AppNavTab.TODAY to "Сегодня",
+        AppNavTab.CALENDAR to "Календарь",
+        AppNavTab.HOLIDAYS to "Праздники",
+        AppNavTab.PRAYERS to "Молитвы",
+        AppNavTab.FAVORITES to "Избранное"
+    )
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val isWideScreen = maxWidth >= 600.dp
@@ -126,7 +137,7 @@ fun OrthodoxAppRoot(viewModel: MainViewModel) {
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier
                                 .padding(vertical = 12.dp)
-                                .size(32.dp)
+                                .size(28.dp)
                         )
                     }
                 ) {
@@ -140,7 +151,7 @@ fun OrthodoxAppRoot(viewModel: MainViewModel) {
                                     contentDescription = tab.title
                                 )
                             },
-                            label = { Text(tab.title) },
+                            label = { Text(getShortTabName(tab)) },
                             colors = NavigationRailItemDefaults.colors(
                                 selectedIconColor = MaterialTheme.colorScheme.primary,
                                 selectedTextColor = MaterialTheme.colorScheme.primary,
@@ -181,19 +192,33 @@ fun OrthodoxAppRoot(viewModel: MainViewModel) {
                 topBar = {
                     TopAppBar(
                         title = {
-                            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_orthodox_cross),
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.secondary,
                                     modifier = Modifier.size(20.dp)
                                 )
-                                androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(8.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = getTopBarTitle(currentTab),
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
-                                    fontFamily = FontFamily.Serif
+                                    fontFamily = FontFamily.Serif,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        },
+                        actions = {
+                            IconButton(
+                                onClick = { viewModel.selectTab(AppNavTab.SETTINGS) },
+                                modifier = Modifier.testTag("top_bar_settings_btn")
+                            ) {
+                                Icon(
+                                    imageVector = if (currentTab == AppNavTab.SETTINGS) Icons.Filled.Settings else Icons.Outlined.Settings,
+                                    contentDescription = "Настройки",
+                                    tint = if (currentTab == AppNavTab.SETTINGS) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         },
@@ -206,29 +231,36 @@ fun OrthodoxAppRoot(viewModel: MainViewModel) {
                 bottomBar = {
                     NavigationBar(
                         containerColor = MaterialTheme.colorScheme.surface,
-                        tonalElevation = 8.dp
+                        tonalElevation = 6.dp
                     ) {
-                        AppNavTab.entries.forEach { tab ->
+                        bottomTabs.forEach { (tab, shortName) ->
+                            val isSelected = currentTab == tab
                             NavigationBarItem(
-                                selected = currentTab == tab,
+                                selected = isSelected,
                                 onClick = { viewModel.selectTab(tab) },
                                 icon = {
                                     Icon(
                                         imageVector = getTabIcon(tab),
-                                        contentDescription = tab.title
+                                        contentDescription = shortName,
+                                        modifier = Modifier.size(22.dp)
                                     )
                                 },
                                 label = {
                                     Text(
-                                        text = tab.title,
-                                        fontSize = 10.sp,
-                                        maxLines = 1
+                                        text = shortName,
+                                        fontSize = 11.sp,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                 },
+                                alwaysShowLabel = true,
                                 colors = NavigationBarItemDefaults.colors(
                                     selectedIconColor = MaterialTheme.colorScheme.primary,
                                     selectedTextColor = MaterialTheme.colorScheme.primary,
-                                    indicatorColor = MaterialTheme.colorScheme.primaryContainer
+                                    indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+                                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
                                 ),
                                 modifier = Modifier.testTag("nav_bar_${tab.name.lowercase()}")
                             )
@@ -287,15 +319,22 @@ fun TabContent(
     }
 }
 
-fun getTopBarTitle(tab: AppNavTab): String {
-    return when (tab) {
-        AppNavTab.TODAY -> "Православный Календарь"
-        AppNavTab.CALENDAR -> "Церковный Календарь"
-        AppNavTab.HOLIDAYS -> "Православные Праздники"
-        AppNavTab.PRAYERS -> "Православный Молитвослов"
-        AppNavTab.FAVORITES -> "Избранное"
-        AppNavTab.SETTINGS -> "Настройки и правила"
-    }
+fun getShortTabName(tab: AppNavTab): String = when (tab) {
+    AppNavTab.TODAY -> "Сегодня"
+    AppNavTab.CALENDAR -> "Календарь"
+    AppNavTab.HOLIDAYS -> "Праздники"
+    AppNavTab.PRAYERS -> "Молитвы"
+    AppNavTab.FAVORITES -> "Избранное"
+    AppNavTab.SETTINGS -> "Настройки"
+}
+
+fun getTopBarTitle(tab: AppNavTab): String = when (tab) {
+    AppNavTab.TODAY -> "Православный Календарь"
+    AppNavTab.CALENDAR -> "Церковный Календарь"
+    AppNavTab.HOLIDAYS -> "Православные Праздники"
+    AppNavTab.PRAYERS -> "Православный Молитвослов"
+    AppNavTab.FAVORITES -> "Избранное"
+    AppNavTab.SETTINGS -> "Настройки и правила"
 }
 
 fun getTabIcon(tab: AppNavTab) = when (tab) {

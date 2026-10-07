@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,8 +22,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.ChevronLeft
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.KeyboardDoubleArrowLeft
+import androidx.compose.material.icons.filled.KeyboardDoubleArrowRight
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Today
 import androidx.compose.material.icons.outlined.StarOutline
@@ -38,7 +36,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -58,7 +55,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.R
-import com.example.data.model.FastingRule
 import com.example.data.model.FeastType
 import com.example.data.model.OrthodoxHoliday
 import com.example.ui.MainViewModel
@@ -88,7 +84,7 @@ fun CalendarScreen(
     var currentYearMonth by remember { mutableStateOf(YearMonth.from(selectedDate)) }
 
     val monthFormatter = DateTimeFormatter.ofPattern("LLLL yyyy", Locale("ru"))
-    val dayFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy г.", Locale("ru"))
+    val dayFormatter = DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy г.", Locale("ru"))
     val oldStyleFormatter = DateTimeFormatter.ofPattern("d MMMM", Locale("ru"))
 
     val scrollState = rememberScrollState()
@@ -116,11 +112,23 @@ fun CalendarScreen(
                     .fillMaxWidth()
                     .padding(12.dp)
             ) {
+                // Header with year and month arrows
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    IconButton(
+                        onClick = { currentYearMonth = currentYearMonth.minusYears(1) },
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardDoubleArrowLeft,
+                            contentDescription = "Предыдущий год",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
                     IconButton(
                         onClick = { currentYearMonth = currentYearMonth.minusMonths(1) },
                         modifier = Modifier.testTag("prev_month_btn")
@@ -132,15 +140,13 @@ fun CalendarScreen(
                         )
                     }
 
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = currentYearMonth.format(monthFormatter).replaceFirstChar { it.uppercase() },
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = FontFamily.Serif
-                        )
-                    }
+                    Text(
+                        text = currentYearMonth.format(monthFormatter).replaceFirstChar { it.uppercase() },
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamily.Serif
+                    )
 
                     IconButton(
                         onClick = { currentYearMonth = currentYearMonth.plusMonths(1) },
@@ -150,6 +156,17 @@ fun CalendarScreen(
                             imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                             contentDescription = "Следующий месяц",
                             tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                    IconButton(
+                        onClick = { currentYearMonth = currentYearMonth.plusYears(1) },
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardDoubleArrowRight,
+                            contentDescription = "Следующий год",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -173,11 +190,11 @@ fun CalendarScreen(
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Вернуться к Сегодня", style = MaterialTheme.typography.labelMedium)
+                        Text("К сегодняшнему дню", style = MaterialTheme.typography.labelSmall)
                     }
                 }
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // Days of week header
                 Row(
@@ -198,11 +215,11 @@ fun CalendarScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
                 // Month Calendar Grid
                 val firstDayOfMonth = currentYearMonth.atDay(1)
-                val dayOfWeekOffset = firstDayOfMonth.dayOfWeek.value - 1 // Monday = 0
+                val dayOfWeekOffset = firstDayOfMonth.dayOfWeek.value - 1
                 val totalDays = currentYearMonth.lengthOfMonth()
                 val totalCells = ((dayOfWeekOffset + totalDays + 6) / 7) * 7
 
@@ -210,7 +227,7 @@ fun CalendarScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 3.dp),
+                            .padding(vertical = 2.dp),
                         horizontalArrangement = Arrangement.SpaceAround
                     ) {
                         for (col in 0 until 7) {
@@ -221,10 +238,6 @@ fun CalendarScreen(
                                 val cellDate = currentYearMonth.atDay(dayNumber)
                                 val isSelected = cellDate == selectedDate
                                 val isToday = cellDate == LocalDate.now()
-                                val dayCellInfo = viewModel.dayInfo.value.let {
-                                    // Precalculate marker
-                                    cellDate
-                                }
 
                                 val isWednesdayOrFriday = cellDate.dayOfWeek == DayOfWeek.WEDNESDAY || cellDate.dayOfWeek == DayOfWeek.FRIDAY
                                 val isGreatFeast = viewModel.allYearHolidays.any {
@@ -270,7 +283,6 @@ fun CalendarScreen(
                                             }
                                         )
 
-                                        // Indicator Dot
                                         if (isGreatFeast) {
                                             Box(
                                                 modifier = Modifier
@@ -301,7 +313,7 @@ fun CalendarScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
         // Selected Day Details Card
         Card(
@@ -324,9 +336,9 @@ fun CalendarScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = selectedDate.format(dayFormatter),
+                            text = selectedDate.format(dayFormatter).replaceFirstChar { it.uppercase() },
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold,
@@ -343,7 +355,7 @@ fun CalendarScreen(
                 }
 
                 HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 12.dp),
+                    modifier = Modifier.padding(vertical = 10.dp),
                     color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
                 )
 
@@ -396,7 +408,7 @@ fun CalendarScreen(
                             }
                         }
                     }
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
 
                 // Saints on selected day
@@ -415,7 +427,7 @@ fun CalendarScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 // Fasting Rule
                 Text(
@@ -432,7 +444,7 @@ fun CalendarScreen(
                 )
 
                 if (dayInfo.mainFeast != null) {
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     Button(
                         onClick = { onHolidayClick(dayInfo.mainFeast!!) },
                         modifier = Modifier
